@@ -1,6 +1,6 @@
 import { KeyboardModifier } from "@/services/ioService";
 import { UuidString, SNNote } from "@standardnotes/snjs";
-import { makeObservable, observable, action } from "mobx";
+import { makeObservable, observable, action, computed } from "mobx";
 import { WebApplication } from "../application";
 import { Editor } from "../editor";
 
@@ -13,6 +13,7 @@ export class NotesState {
   ) {
     makeObservable(this, {
       selectedNotes: observable,
+      selectedNotesCount: computed,
       selectNote: action,
     });
   }
@@ -21,12 +22,20 @@ export class NotesState {
     return this.application.editorGroup.editors[0];
   }
 
+  get selectedNotesCount(): number {
+    return Object.keys(this.selectedNotes).length;
+  }
+
   async selectNote(note: SNNote): Promise<void> {
     if (
       this.io.activeModifiers.has(KeyboardModifier.Meta) ||
       this.io.activeModifiers.has(KeyboardModifier.Ctrl)
     ) {
-      this.selectedNotes[note.uuid] = note;
+      if (this.selectedNotes[note.uuid]) {
+        delete this.selectedNotes[note.uuid];
+      } else {
+        this.selectedNotes[note.uuid] = note;
+      }
     } else {
       this.selectedNotes = {
         [note.uuid]: note,
