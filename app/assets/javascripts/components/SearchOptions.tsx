@@ -24,11 +24,14 @@ function SearchOptions({ appState }: Props) {
     includeProtectedContents,
     includeArchived,
     includeTrashed,
-  } = useAutorunValue(() => ({
-    includeProtectedContents: searchOptions.includeProtectedContents,
-    includeArchived: searchOptions.includeArchived,
-    includeTrashed: searchOptions.includeTrashed,
-  }));
+  } = useAutorunValue(
+    () => ({
+      includeProtectedContents: searchOptions.includeProtectedContents,
+      includeArchived: searchOptions.includeArchived,
+      includeTrashed: searchOptions.includeTrashed,
+    }),
+    [searchOptions]
+  );
 
   const [
     togglingIncludeProtectedContents,
@@ -63,8 +66,7 @@ function SearchOptions({ appState }: Props) {
       open={open}
       onChange={() => {
         const { height } = buttonRef.current.getBoundingClientRect();
-        const extraVerticalBreathingRoom = 4;
-        setOptionsPanelTop(height + extraVerticalBreathingRoom);
+        setOptionsPanelTop(height);
         setOpen((prevOpen) => !prevOpen);
       }}
     >
